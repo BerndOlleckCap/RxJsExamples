@@ -9,6 +9,7 @@ import {Utils} from './utils/Utils';
 import {catchError} from 'rxjs/internal/operators/catchError';
 import {of} from 'rxjs/internal/observable/of';
 
+// for more info see: https://duckduckgo.com/api
 const searchUrl = 'https://api.duckduckgo.com/';
 
 interface DuckDuckGoRelatedTopic {
