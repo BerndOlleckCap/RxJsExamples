@@ -1,30 +1,11 @@
-
 <mat-tab-group>
   <mat-tab label="Print Squares">
-    <button mat-raised-button (click)="squaresService.printSquares()">Start</button>
+    <app-squares></app-squares>
   </mat-tab>
   <mat-tab label="Print Squares With Delay">
-    <button mat-raised-button (click)="squaresService.printSquaresWithDelay()">Start</button>
+    <app-squares-with-delay></app-squares-with-delay>
   </mat-tab>
   <mat-tab label="Search">
-    <div>
-      <mat-form-field>
-        <input matInput placeholder="Search Text" [(ngModel)]="searchInput">
-        <mat-hint>Min 3 characters</mat-hint>
-      </mat-form-field>
-    </div>
-    <div>
-      <h2>Result from DuckDuckGo:</h2>
-      {{abstractText$ | async}}
-      <h3>URLs</h3>
-      <a href="{{abstractUrl$ | async}}">{{abstractUrl$ | async}}</a>
-      <h3>Related</h3>
-      <div *ngFor="let row of relatedTopics$ | async">
-        <a href="{{row.FirstURL}}">{{row.FirstURL}}</a>
-        <p>{{row.Text}}</p>
-      </div>
-    </div>
+    <app-search></app-search>
   </mat-tab>
 </mat-tab-group>
-
-
