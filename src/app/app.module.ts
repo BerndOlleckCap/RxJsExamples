@@ -9,13 +9,15 @@ import {FormsModule} from '@angular/forms';
 import {SquaresComponent} from './squares/squares.component';
 import {SquaresWithDelayComponent} from './squares-with-delay/squares-with-delay.component';
 import {SearchComponent} from './search/search.component';
+import { TrainingExamplesComponent } from './training-examples/training-examples.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SquaresComponent,
     SquaresWithDelayComponent,
-    SearchComponent
+    SearchComponent,
+    TrainingExamplesComponent
   ],
   imports: [
     BrowserModule,
