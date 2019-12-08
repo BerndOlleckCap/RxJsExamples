@@ -4,14 +4,17 @@ import {
   asyncScheduler,
   combineLatest,
   concat,
-  ConnectableObservable, forkJoin,
+  ConnectableObservable,
+  forkJoin,
   fromEvent,
   interval,
   merge,
   of,
-  queueScheduler, race,
+  queueScheduler,
+  race,
   ReplaySubject,
-  Subject, zip
+  Subject,
+  zip
 } from 'rxjs';
 import {filter, map, observeOn, publish, share, startWith, take, takeUntil} from 'rxjs/operators';
 
@@ -174,21 +177,19 @@ export class TrainingExamplesComponent {
     this.resetLogTime();
     const values$ = of('A', 'B', 'C', 'D', 'E');
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
-    const first$ = values$;
-    const second$ = interval$;
-    const combineLatest$ = combineLatest(first$, second$);
-    const forkJoin$ = forkJoin(first$, second$);
-    const concat$ = concat(first$, second$);
-    const merge$ = merge(first$, second$);
-    const race$ = race<any>(first$, second$);
-    const zip$ = zip(first$, second$);
+    const combineLatest$ = combineLatest(values$, interval$);
+    const forkJoin$ = forkJoin(values$, interval$);
+    const concat$ = concat(values$, interval$);
+    const merge$ = merge(values$, interval$);
+    const zip$ = zip(values$, interval$);
+    const race$ = race<any>(values$, interval$);
 
     combineLatest$.subscribe((v) => this.log('combineLatest:', v));
     concat$.subscribe((v) => this.log('concat:', v));
     forkJoin$.subscribe((v) => this.log('forkJoin:', v));
     merge$.subscribe((v) => this.log('merge:', v));
-    race$.subscribe((v) => this.log('race:', v));
     zip$.subscribe((v) => this.log('zip:', v));
+    race$.subscribe((v) => this.log('race:', v));
   }
 
   startCombinedHigherOrder() {
