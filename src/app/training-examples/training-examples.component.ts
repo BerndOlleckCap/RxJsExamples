@@ -1,19 +1,22 @@
 import {Component} from '@angular/core';
 import {
   asapScheduler,
-  asyncScheduler, BehaviorSubject,
+  asyncScheduler,
+  BehaviorSubject,
   combineLatest,
   concat,
   ConnectableObservable,
   forkJoin,
   fromEvent,
   interval,
-  merge, Observable,
+  merge,
+  Observable,
   of,
   queueScheduler,
   race,
   ReplaySubject,
-  Subject, timer,
+  Subject,
+  timer,
   zip
 } from 'rxjs';
 import {
@@ -21,15 +24,19 @@ import {
   concatMap,
   delay,
   filter,
-  map, mergeMap,
+  map,
+  mergeMap,
   observeOn,
   pluck,
   publish,
+  retry,
   share,
-  startWith, switchAll,
+  startWith,
   switchMap,
   take,
-  takeUntil, tap, withLatestFrom
+  takeUntil,
+  tap,
+  withLatestFrom
 } from 'rxjs/operators';
 import {fromPromise} from 'rxjs/internal-compatibility';
 
@@ -250,6 +257,29 @@ export class TrainingExamplesComponent {
         return of('Recovery for error', 'and', 'further', 'values');
       }),
       tap(v => this.log('after the error handler in the pipe, value is ', v))
+    );
+
+    withError$.subscribe(
+      v => this.log('Got value', v),
+      e => this.log('Got error', e));
+  }
+
+  startWithErrorAndRetry() {
+    this.resetLogTime();
+
+    const interval$ = interval(1000).pipe(takeUntil(this.stop$));
+    const withError$ = interval$.pipe(
+      tap(() => this.log('before the potential error in the pipe')),
+      map((v) => {
+        if (v === 2) {
+          this.log('Throwing the error!');
+          throw 'Error for ' + v;
+        }
+        return v;
+      }),
+      tap(() => this.log('after the potential error in the pipe')),
+      retry(2),
+      tap(() => this.log('after the retry in the pipe')),
     );
 
     withError$.subscribe(
