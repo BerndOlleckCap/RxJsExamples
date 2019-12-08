@@ -1,5 +1,20 @@
 <button mat-raised-button (click)="stop()">Stop</button>
 
+<h4>Basics</h4>
+
+<button mat-raised-button (click)="startSimpleCreation()">Simple creation</button>
+<button mat-raised-button (click)="startSubjectCreation()">Subject creation</button>
+<button mat-raised-button (click)="startAsyncCreation()">Async creation</button>
+<button mat-raised-button (click)="startSelfmade()">Selfmade</button>
+<button mat-raised-button (click)="startSelfmadeTimed()">Selfmade with timer</button>
+
+<h4>Error Handling</h4>
+
+<button mat-raised-button (click)="startWithError()">With error</button>
+<button mat-raised-button (click)="startCatchingErrors()">Catching error</button>
+<button mat-raised-button (click)="startWithSwitchMapErrors()">With switchMap errors</button>
+<button mat-raised-button (click)="startCatchingSwitchMapErrors()">Catching switchMap errors</button>
+
 <h4>Schedulers</h4>
 
 <button mat-raised-button (click)="startNoScheduler()">Timing without scheduler</button>
@@ -19,4 +34,5 @@
 <h4>Combining & Higher Order</h4>
 
 <button mat-raised-button (click)="startCombinedCreation()">Combination (creation)</button>
-<button mat-raised-button (click)="startCombinedHigherOrder()">Combination (higher order)</button>
+<button mat-raised-button (click)="startSubProcesses()">Sub processes</button>
+<button mat-raised-button (click)="startWithLatestFrom()">With latest from</button>
