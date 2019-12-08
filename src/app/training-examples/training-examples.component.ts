@@ -20,8 +20,12 @@ import {
   zip
 } from 'rxjs';
 import {
+  auditTime,
+  bufferCount,
+  bufferTime,
   catchError,
   concatMap,
+  debounceTime,
   delay,
   filter,
   map,
@@ -30,12 +34,14 @@ import {
   pluck,
   publish,
   retry,
+  sampleTime,
   share,
   startWith,
   switchMap,
   take,
   takeUntil,
   tap,
+  throttleTime,
   withLatestFrom
 } from 'rxjs/operators';
 import {fromPromise} from 'rxjs/internal-compatibility';
@@ -223,7 +229,7 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(() => this.log('before the potential error in the pipe')),
-      map((v) => {
+      map(v => {
         if (v === 2) {
           this.log('Throwing the error!');
           throw 'Error for ' + v;
@@ -244,7 +250,7 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(v => this.log('before the potential error in the pipe, value is ', v)),
-      map((v) => {
+      map(v => {
         if (v === 2) {
           this.log('Throwing the error!');
           throw 'Error for ' + v;
@@ -270,7 +276,7 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(() => this.log('before the potential error in the pipe')),
-      map((v) => {
+      map(v => {
         if (v === 2) {
           this.log('Throwing the error!');
           throw 'Error for ' + v;
@@ -293,10 +299,10 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(v => this.log('before the potential error in the outer pipe, value is ', v)),
-      switchMap( (v) => {
+      switchMap( v => {
         return of(v).pipe(
           tap(v => this.log('before the potential error in the inner pipe, value is ', v)),
-          map((v) => {
+          map(v => {
             if (v === 2) {
               this.log('Throwing the error!');
               throw 'Error for ' + v;
@@ -320,10 +326,10 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(v => this.log('before the potential error in the outer pipe, value is ', v)),
-      switchMap( (v) => {
+      switchMap( v => {
         return of(v).pipe(
           tap(v => this.log('before the potential error in the inner pipe, value is ', v)),
-          map((v) => {
+          map(v => {
             if (v === 2) {
               this.log('Throwing the error!');
               throw 'Error for ' + v;
@@ -489,12 +495,12 @@ export class TrainingExamplesComponent {
     const zip$ = zip(values$, interval$);
     const race$ = race<any>(values$, interval$);
 
-    combineLatest$.subscribe((v) => this.log('combineLatest:', v));
-    concat$.subscribe((v) => this.log('concat:', v));
-    forkJoin$.subscribe((v) => this.log('forkJoin:', v));
-    merge$.subscribe((v) => this.log('merge:', v));
-    zip$.subscribe((v) => this.log('zip:', v));
-    race$.subscribe((v) => this.log('race:', v));
+    combineLatest$.subscribe(v => this.log('combineLatest:', v));
+    concat$.subscribe(v => this.log('concat:', v));
+    forkJoin$.subscribe(v => this.log('forkJoin:', v));
+    merge$.subscribe(v => this.log('merge:', v));
+    zip$.subscribe(v => this.log('zip:', v));
+    race$.subscribe(v => this.log('race:', v));
   }
 
   private createTimedObservable<T>(values: T[], timing: number = 1000): Observable<T> {
@@ -506,22 +512,22 @@ export class TrainingExamplesComponent {
     const values$ = this.createTimedObservable([0.5, 2, 0.75]);
 
     const switchMap$ = values$.pipe(
-      switchMap((v) =>
+      switchMap(v =>
         this.createTimedObservable(['A of ' + v, 'B of ' + v, 'C of ' + v]).pipe(delay(v * 1000))
       ));
     const mergeMap$ = values$.pipe(
-      mergeMap((v) =>
+      mergeMap(v =>
         this.createTimedObservable(['A of ' + v, 'B of ' + v, 'C of ' + v]).pipe(delay(v * 1000))
       ));
     const concatMap$ = values$.pipe(
-      concatMap((v) =>
+      concatMap(v =>
         this.createTimedObservable(['A of ' + v, 'B of ' + v, 'C of ' + v]).pipe(delay(v * 1000))
       ));
 
-    values$.subscribe((v) => this.log('values:', v));
-    switchMap$.subscribe((v) => this.log('switchMap:', v));
-    mergeMap$.subscribe((v) => this.log('mergeMap:', v));
-    concatMap$.subscribe((v) => this.log('concatMap:', v));
+    values$.subscribe(v => this.log('values:', v));
+    switchMap$.subscribe(v => this.log('switchMap:', v));
+    mergeMap$.subscribe(v => this.log('mergeMap:', v));
+    concatMap$.subscribe(v => this.log('concatMap:', v));
 
     // others: exhaust / exhaustMap
   }
@@ -533,7 +539,39 @@ export class TrainingExamplesComponent {
 
     const withLatestFrom$ = interval1$.pipe(withLatestFrom(interval2$));
 
-    withLatestFrom$.subscribe((v) => this.log('withLatestFrom:', v));
+    withLatestFrom$.subscribe(v => this.log('withLatestFrom:', v));
+  }
+
+  startBasicBackpressure() {
+    this.resetLogTime();
+    const interval$ = interval(1000).pipe(takeUntil(this.stop$));
+
+    const throttleTime$ = interval$.pipe(throttleTime(2000));
+    const auditTime$ = interval$.pipe(auditTime(2000));
+    const sampleTime$ = interval$.pipe(sampleTime(2000));
+    const bufferTime$ = interval$.pipe(bufferTime(2000));
+    const bufferCount$ = interval$.pipe(bufferCount(3, 2));
+
+    interval$.subscribe(v => this.log('interval:', v));
+    throttleTime$.subscribe(v => this.log('throttleTime:', v));
+    auditTime$.subscribe(v => this.log('auditTime:', v));
+    sampleTime$.subscribe(v => this.log('sampleTime:', v));
+    bufferTime$.subscribe(v => this.log('bufferTime:', v));
+    bufferCount$.subscribe(v => this.log('bufferCount:', v));
+
+    // also: throttle, audit
+  }
+
+  startDebounceTime() {
+    this.resetLogTime();
+    const fromEvent$ = fromEvent(document, 'click').pipe(map(() => 'click'), takeUntil(this.stop$));
+
+    const delay$ = fromEvent$.pipe(delay(1000));
+    const debounceTime$ = fromEvent$.pipe(debounceTime(1000));
+
+    fromEvent$.subscribe(v => this.log('fromEvent:', v));
+    delay$.subscribe(v => this.log('delay:', v));
+    debounceTime$.subscribe(v => this.log('debounceTime:', v));
   }
 
 }
