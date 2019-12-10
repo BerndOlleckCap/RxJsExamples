@@ -5,7 +5,7 @@ import {
   BehaviorSubject,
   combineLatest,
   concat,
-  ConnectableObservable,
+  ConnectableObservable, EMPTY,
   forkJoin,
   fromEvent,
   interval,
@@ -340,6 +340,7 @@ export class TrainingExamplesComponent {
           catchError( error => {
             this.log('caught error in the inner pipe', error);
             return of('Recovery for error', 'and', 'further', 'values');
+            // alternative to ignore the error: return EMPTY;
           }),
           tap(v => this.log('after the error handler in the inner pipe, value is ', v))
         )
