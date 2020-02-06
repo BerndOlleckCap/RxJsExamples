@@ -9,7 +9,9 @@ import {FormsModule} from '@angular/forms';
 import {SquaresComponent} from './squares/squares.component';
 import {SquaresWithDelayComponent} from './squares-with-delay/squares-with-delay.component';
 import {SearchComponent} from './search/search.component';
-import { TrainingExamplesComponent } from './training-examples/training-examples.component';
+import {TrainingExamplesComponent} from './training-examples/training-examples.component';
+import {ChildComponent} from './expression-changed-exception/child.component';
+import {ExpressionChangedExceptionComponent} from './expression-changed-exception/expression-changed-exception.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,10 @@ import { TrainingExamplesComponent } from './training-examples/training-examples
     SquaresComponent,
     SquaresWithDelayComponent,
     SearchComponent,
-    TrainingExamplesComponent
+    TrainingExamplesComponent,
+    ExpressionChangedExceptionComponent,
+    ChildComponent,
+    ChildComponent
   ],
   imports: [
     BrowserModule,

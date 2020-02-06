@@ -1,0 +1,7 @@
+<div>An example for the ExpressionChangedAfterItHasBeenCheckedError:</div>
+<div>ParentComponent.name = {{name}}</div>
+<div>ParentComponent.text = {{text}}</div>
+<button mat-raised-button (click)="activateChild()">Activate Child</button>
+<div *ngIf="activeChild">
+  <app-child [text]="text" (changeEvent)="changeTextCallbackFromChild($event)"></app-child>
+</div>
