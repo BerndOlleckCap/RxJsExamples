@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
-import {catchError, debounceTime, filter, map, share, switchMap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, filter, map, share, switchMap} from 'rxjs/operators';
 import {Utils} from '../utils/Utils';
 
 // for more info see: https://duckduckgo.com/api
@@ -44,6 +44,7 @@ export class SearchComponent {
   searchResult$: Observable<DuckDuckGoResult> = this.searchInput$.pipe(
     debounceTime(500),
     filter(searchInput => searchInput && searchInput.length >= 3),
+    distinctUntilChanged(),
     map(searchInput => encodeURIComponent(searchInput)),
     map(SearchComponent.convertToSearchUrl),
     switchMap(
