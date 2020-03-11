@@ -6,7 +6,7 @@ import {ExpressionChangedExceptionComponent} from './expression-changed-exceptio
   templateUrl: './child.component.html',
   styleUrls: ['./child.component.css']
 })
-export class ChildComponent {
+export class ChildComponent implements OnInit {
 
   name = 'I am the child component';
 

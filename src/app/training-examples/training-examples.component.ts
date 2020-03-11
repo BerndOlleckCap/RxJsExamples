@@ -5,7 +5,7 @@ import {
   BehaviorSubject,
   combineLatest,
   concat,
-  ConnectableObservable, EMPTY,
+  ConnectableObservable,
   forkJoin,
   fromEvent,
   interval,
@@ -15,6 +15,7 @@ import {
   queueScheduler,
   race,
   ReplaySubject,
+  scheduled,
   Subject,
   timer,
   zip
@@ -27,7 +28,6 @@ import {
   concatMap,
   debounceTime,
   delay,
-  filter,
   map,
   mergeMap,
   observeOn,
@@ -36,7 +36,6 @@ import {
   retry,
   sampleTime,
   share,
-  startWith,
   switchMap,
   take,
   takeUntil,
@@ -53,14 +52,9 @@ import {fromPromise} from 'rxjs/internal-compatibility';
 })
 export class TrainingExamplesComponent {
 
-  title = 'InitialSet';
   static logStartTime = new Date().getTime();
 
   stop$ = new Subject();
-
-  stop() {
-    this.stop$.next();
-  }
 
   static resetLogTime() {
     this.logStartTime = new Date().getTime();
@@ -68,6 +62,10 @@ export class TrainingExamplesComponent {
 
   static log(...args) {
     console.log(new Date().getTime() - this.logStartTime, ...args);
+  }
+
+  stop() {
+    this.stop$.next();
   }
 
   resetLogTime() {
@@ -148,7 +146,7 @@ export class TrainingExamplesComponent {
       return () => {
         TrainingExamplesComponent.log('selfmadeSquareOperator got unsubscribe');
         subscription.unsubscribe();
-      }
+      };
     });
   }
 
@@ -166,7 +164,7 @@ export class TrainingExamplesComponent {
       subscriber.complete();
       return () => {
         this.log('Observable: was unsubscribed');
-      }
+      };
     });
 
     this.log('Subscriber will subscribe');
@@ -208,7 +206,7 @@ export class TrainingExamplesComponent {
       return () => {
         this.log('Observable: was unsubscribed');
         clearInterval(intervalId);
-      }
+      };
     });
 
     this.log('Subscriber will subscribe');
@@ -232,7 +230,7 @@ export class TrainingExamplesComponent {
       map(v => {
         if (v === 2) {
           this.log('Throwing the error!');
-          throw 'Error for ' + v;
+          throw new Error('Error for ' + v);
         }
         return v;
       }),
@@ -241,7 +239,7 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e));
+      e => this.log('Got error', e.message));
   }
 
   startCatchingErrors() {
@@ -253,13 +251,13 @@ export class TrainingExamplesComponent {
       map(v => {
         if (v === 2) {
           this.log('Throwing the error!');
-          throw 'Error for ' + v;
+          throw new Error('Error for ' + v);
         }
         return v;
       }),
       tap(v => this.log('after the potential error in the pipe, value is ', v)),
       catchError( error => {
-        this.log('caught error', error);
+        this.log('caught error', error.message);
         return of('Recovery for error', 'and', 'further', 'values');
       }),
       tap(v => this.log('after the error handler in the pipe, value is ', v))
@@ -267,7 +265,7 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e));
+      e => this.log('Got error', e.message));
   }
 
   startWithErrorAndRetry() {
@@ -279,7 +277,7 @@ export class TrainingExamplesComponent {
       map(v => {
         if (v === 2) {
           this.log('Throwing the error!');
-          throw 'Error for ' + v;
+          throw new Error('Error for ' + v);
         }
         return v;
       }),
@@ -290,7 +288,7 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e));
+      e => this.log('Got error', e.message));
   }
 
   startWithSwitchMapErrors() {
@@ -298,26 +296,26 @@ export class TrainingExamplesComponent {
 
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
-      tap(v => this.log('before the potential error in the outer pipe, value is ', v)),
-      switchMap( v => {
-        return of(v).pipe(
+      tap(outerValue => this.log('before the potential error in the outer pipe, value is ', outerValue)),
+      switchMap( innerValue => {
+        return of(innerValue).pipe(
           tap(v => this.log('before the potential error in the inner pipe, value is ', v)),
           map(v => {
             if (v === 2) {
               this.log('Throwing the error!');
-              throw 'Error for ' + v;
+              throw new Error('Error for ' + v);
             }
             return v;
           }),
           tap(v => this.log('after the potential error in the inner pipe, value is ', v))
-        )
+        );
       }),
       tap(v => this.log('after the potential error in the outer pipe, value is ', v)),
     );
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e));
+      e => this.log('Got error', e.message));
   }
 
   startCatchingSwitchMapErrors() {
@@ -325,32 +323,32 @@ export class TrainingExamplesComponent {
 
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
-      tap(v => this.log('before the potential error in the outer pipe, value is ', v)),
-      switchMap( v => {
-        return of(v).pipe(
+      tap(outerValue => this.log('before the potential error in the outer pipe, value is ', outerValue)),
+      switchMap( innerValue => {
+        return of(innerValue).pipe(
           tap(v => this.log('before the potential error in the inner pipe, value is ', v)),
           map(v => {
             if (v === 2) {
               this.log('Throwing the error!');
-              throw 'Error for ' + v;
+              throw new Error('Error for ' + v);
             }
             return v;
           }),
           tap(v => this.log('after the potential error in the inner pipe, value is ', v)),
           catchError( error => {
-            this.log('caught error in the inner pipe', error);
+            this.log('caught error in the inner pipe', error.message);
             return of('Recovery for error', 'and', 'further', 'values');
             // alternative to ignore the error: return EMPTY;
           }),
           tap(v => this.log('after the error handler in the inner pipe, value is ', v))
-        )
+        );
       }),
       tap(v => this.log('after the potential error in the outer pipe, value is ', v)),
     );
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e));
+      e => this.log('Got error', e.message));
   }
 
   startNoScheduler() {
@@ -396,21 +394,16 @@ export class TrainingExamplesComponent {
     setTimeout(() => this.log('Now Macrotasks are been processed:'));
     Promise.resolve().then(() => this.log('Now Microtasks are being processed:'));
 
-    const async$ = of('').pipe(
-      startWith('asyncScheduler', asyncScheduler));
+    const async$ = scheduled(of('asyncScheduler'), asyncScheduler);
 
-    const asap$ = of('').pipe(
-      startWith('asapScheduler', asapScheduler));
+    const asap$ = scheduled(of('asapScheduler'), asapScheduler);
 
-    const queue$ = of('').pipe(
-      startWith('queueScheduler', queueScheduler));
+    const queue$ = scheduled(of('queueScheduler'), queueScheduler);
 
     merge(
       async$,
       asap$,
-      queue$).pipe(
-      filter(x => !!x)
-    ).subscribe(this.log);
+      queue$).subscribe(this.log);
 
     this.log('after subscription');
   }
@@ -489,8 +482,8 @@ export class TrainingExamplesComponent {
     const values$ = of('A', 'B', 'C', 'D', 'E');
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
 
-    const combineLatest$ = combineLatest(values$, interval$);
-    const forkJoin$ = forkJoin(values$, interval$);
+    const combineLatest$ = combineLatest([values$, interval$]);
+    const forkJoin$ = forkJoin([values$, interval$]);
     const concat$ = concat(values$, interval$);
     const merge$ = merge(values$, interval$);
     const zip$ = zip(values$, interval$);
