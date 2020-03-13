@@ -1,0 +1,14 @@
+<p>An Example for triggering a value event in one observable caused by a different event</p>
+<p>A usage situation could be if you display data based on an ID and you want to reload that data based on a "refresh" button.</p>
+<div>
+  <button mat-raised-button (click)="startSource()">Start Source</button>
+  Starts a timer observable which produces a value every 5 seconds.
+</div>
+<div>
+  <button mat-raised-button (click)="stopSource()">Stop Source</button>
+  Stops the timer observable.
+</div>
+<div>
+  <button mat-raised-button (click)="triggerAdditionalValue()">Trigger additional value</button>
+  Produces the last value again even though the source pipe did not send it again.
+</div>

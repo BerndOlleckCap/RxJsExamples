@@ -15,6 +15,7 @@ import {SearchComponent} from './usecases/search/search.component';
 import {TrainingExamplesComponent} from './training-examples/training-examples.component';
 import {ChildComponent} from './expression-changed-exception/child.component';
 import {ExpressionChangedExceptionComponent} from './expression-changed-exception/expression-changed-exception.component';
+import { TriggerObservableComponent } from './patterns/trigger-observable/trigger-observable.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {ExpressionChangedExceptionComponent} from './expression-changed-exceptio
     TrainingExamplesComponent,
     ExpressionChangedExceptionComponent,
     ChildComponent,
-    ChildComponent
+    ChildComponent,
+    TriggerObservableComponent
   ],
   imports: [
     BrowserModule,
