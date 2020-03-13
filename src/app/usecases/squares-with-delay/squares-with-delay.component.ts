@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {from, interval, zip} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {DateUtils} from '../utils/DateUtils';
+import {DateUtils} from '../../utils/DateUtils';
 
 @Component({
   selector: 'app-squares-with-delay',

@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, filter, map, share, switchMap} from 'rxjs/operators';
-import {Utils} from '../utils/Utils';
+import {Utils} from '../../utils/Utils';
 
 // for more info see: https://duckduckgo.com/api
 const searchUrl = 'https://api.duckduckgo.com/';
