@@ -6,14 +6,14 @@ import {
   combineLatest,
   concat,
   ConnectableObservable,
-  forkJoin,
+  forkJoin, from,
   fromEvent,
   interval,
   merge,
   Observable,
   of,
   queueScheduler,
-  race,
+  race, range,
   ReplaySubject,
   scheduled,
   Subject,
@@ -82,7 +82,10 @@ export class TrainingExamplesComponent {
     const of$ = of('A', 'B', 'C', 'D');
     of$.subscribe(v => this.log('of:', v));
 
-    const range$ = of(3, 5);
+    const from$ = from(['A', 'B', 'C', 'D']);
+    from$.subscribe(v => this.log('from:', v));
+
+    const range$ = range(3, 4);
     range$.subscribe(v => this.log('range:', v));
 
     const promise = Promise.resolve('result');
@@ -239,7 +242,8 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e.message));
+      e => this.log('Got error', e.message),
+      () => this.log('Got complete'));
   }
 
   startCatchingErrors() {
@@ -265,7 +269,8 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e.message));
+      e => this.log('Got error', e.message),
+      () => this.log('Got complete'));
   }
 
   startWithErrorAndRetry() {
@@ -288,7 +293,8 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e.message));
+      e => this.log('Got error', e.message),
+      () => this.log('Got complete'));
   }
 
   startWithSwitchMapErrors() {
@@ -315,7 +321,8 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e.message));
+      e => this.log('Got error', e.message),
+      () => this.log('Got complete'));
   }
 
   startCatchingSwitchMapErrors() {
@@ -348,7 +355,8 @@ export class TrainingExamplesComponent {
 
     withError$.subscribe(
       v => this.log('Got value', v),
-      e => this.log('Got error', e.message));
+      e => this.log('Got error', e.message),
+      () => this.log('Got complete'));
   }
 
   startNoScheduler() {
