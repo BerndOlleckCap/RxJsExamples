@@ -6,14 +6,17 @@ import {
   combineLatest,
   concat,
   ConnectableObservable,
-  forkJoin, from,
+  forkJoin,
+  from,
   fromEvent,
+  iif,
   interval,
   merge,
   Observable,
   of,
   queueScheduler,
-  race, range,
+  race,
+  range,
   ReplaySubject,
   scheduled,
   Subject,
@@ -260,7 +263,7 @@ export class TrainingExamplesComponent {
         return v;
       }),
       tap(v => this.log('after the potential error in the pipe, value is ', v)),
-      catchError( error => {
+      catchError(error => {
         this.log('caught error', error.message);
         return of('Recovery for error', 'and', 'further', 'values');
       }),
@@ -303,7 +306,7 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(outerValue => this.log('before the potential error in the outer pipe, value is ', outerValue)),
-      switchMap( innerValue => {
+      switchMap(innerValue => {
         return of(innerValue).pipe(
           tap(v => this.log('before the potential error in the inner pipe, value is ', v)),
           map(v => {
@@ -331,7 +334,7 @@ export class TrainingExamplesComponent {
     const interval$ = interval(1000).pipe(takeUntil(this.stop$));
     const withError$ = interval$.pipe(
       tap(outerValue => this.log('before the potential error in the outer pipe, value is ', outerValue)),
-      switchMap( innerValue => {
+      switchMap(innerValue => {
         return of(innerValue).pipe(
           tap(v => this.log('before the potential error in the inner pipe, value is ', v)),
           map(v => {
@@ -342,7 +345,7 @@ export class TrainingExamplesComponent {
             return v;
           }),
           tap(v => this.log('after the potential error in the inner pipe, value is ', v)),
-          catchError( error => {
+          catchError(error => {
             this.log('caught error in the inner pipe', error.message);
             return of('Recovery for error', 'and', 'further', 'values');
             // alternative to ignore the error: return EMPTY;
@@ -574,6 +577,37 @@ export class TrainingExamplesComponent {
     fromEvent$.subscribe(v => this.log('fromEvent:', v));
     delay$.subscribe(v => this.log('delay:', v));
     debounceTime$.subscribe(v => this.log('debounceTime:', v));
+  }
+
+  startSimpleIf() {
+    this.resetLogTime();
+
+    const random = Math.random();
+    const sourceA$ = of('A');
+    const sourceB$ = of('B');
+
+    this.log('random is:', random);
+
+    const iif$ = iif(() => random < 0.5, sourceA$, sourceB$);
+
+    iif$.subscribe(v => this.log('iff:', v));
+  }
+
+  startDynamicIf() {
+    this.resetLogTime();
+
+    const random$ = interval(1000).pipe(
+      map(() => Math.random()),
+      takeUntil(this.stop$));
+    const sourceA$ = of('A');
+    const sourceB$ = of('B');
+
+    const iif$ = random$.pipe(
+        tap(v => this.log('Random value is', v)),
+        switchMap( v => iif(() => v < 0.5, sourceA$, sourceB$))
+      );
+
+    iif$.subscribe(v => this.log('iff:', v));
   }
 
 }
